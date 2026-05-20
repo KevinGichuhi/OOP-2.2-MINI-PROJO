@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beetle Web Fitness — Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <style>
+    :root {
+      --navy:       #0D1B2A;
+      --navy-mid:   #1A2E44;
+      --navy-light: #243B55;
+      --accent:     #2E86DE;
+      --accent-glow:#2E86DE33;
+      --gold:       #F5A623;
+      --silver:     #9BA8B5;
+      --white:      #F0F4F8;
+      --muted:      #7A8FA6;
+      --border:     #243B5580;
+      --success:    #27AE60;
+      --danger:     #E74C3C;
+      --radius:     10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 3px; }
+
+    /* ── LOGO ── */
+    .logo-lockup { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--accent), #1A5FA8);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: white;
+      box-shadow: 0 4px 14px var(--accent-glow);
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .logo-icon::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    }
+    .logo-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 1.5px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .logo-sub {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* ── LOGIN ── */
+    .login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 80%, #1A3A5C55 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 20%, #2E86DE22 0%, transparent 60%),
+        var(--navy);
+    }
+    .login-card {
+      background: var(--navy-mid);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .login-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+    }
+    .login-card .logo-lockup { margin-bottom: 2rem; }
+
+    .field-group { margin-bottom: 1.2rem; }
+    .field-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: block; font-weight: 500; }
+
+    /* ── INPUTS ── */
+    input[type=text], input[type=password], input[type=number], select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      background: var(--navy);
+      color: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input::placeholder { color: var(--muted); }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    input[readonly] { opacity: 0.5; cursor: default; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary:hover { background: #1A6FC4; box-shadow: 0 4px 14px var(--accent-glow); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { background: var(--navy-light); color: var(--white); }
+
+    .btn-danger {
+      padding: 5px 12px;
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid #E74C3C55;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-danger:hover { background: #E74C3C18; }
+
+    .btn-undo {
+      padding: 7px 14px;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid #2E86DE55;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-undo:hover { background: var(--accent-glow); }
+    .btn-full { width: 100%; }
+
+    /* ── HEADER / NAV ── */
+    .header {
+      background: var(--navy-mid);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .nav-bar {
+      display: flex; gap: 4px;
+      padding: 0.75rem 1.75rem;
+      background: var(--navy);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .nav-btn.active {
+      background: var(--navy-mid);
+      border-color: var(--border);
+      color: var(--white);
+      font-weight: 500;
+    }
+    .nav-btn:hover:not(.active) { background: var(--navy-light); color: var(--white); }
+
+    /* ── LAYOUT ── */
+    .main-area { padding: 1.75rem; max-width: 980px; margin: 0 auto; }
+    .card {
+      background: var(--navy-mid);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.3px;
+      margin-bottom: 1.1rem;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; font-weight: 500; }
+    .form-field.full { grid-column: 1 / -1; }
+    .actions-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.2rem; }
+
+    /* ── RADIO OPTIONS ── */
+    .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .radio-opt {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--navy);
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .radio-opt:hover { border-color: #2E86DE55; color: var(--white); }
+    .radio-opt.selected {
+      border-color: var(--accent);
+      color: var(--white);
+      background: #2E86DE18;
+      font-weight: 500;
+    }
+    .radio-opt input { display: none; }
+
+    /* ── TABLE ── */
+    .member-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .member-table th {
+      text-align: left; padding: 10px 12px;
+      font-weight: 600; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase;
+    }
+    .member-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); }
+    .member-table tr:last-child td { border-bottom: none; }
+    .member-table tbody tr:hover { background: var(--navy-light); }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .badge-gold   { background: #F5A62322; color: var(--gold); border: 1px solid #F5A62355; }
+    .badge-silver { background: #9BA8B522; color: var(--silver); border: 1px solid #9BA8B555; }
+    .badge-paid   { background: #27AE6022; color: #2ECC71; border: 1px solid #27AE6055; }
+    .badge-unpaid { background: #E74C3C22; color: #E74C3C; border: 1px solid #E74C3C55; }
+
+    /* ── STAT CARDS ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 1rem; }
+    .stat-card {
+      background: var(--navy-mid);
+      border-radius: 14px;
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0.5;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; font-weight: 500; }
+    .stat-value { font-size: 24px; font-weight: 600; color: var(--white); }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── ALERTS ── */
+    .alert { padding: 11px 16px; border-radius: var(--radius); font-size: 13px; margin-bottom: 1rem; }
+    .alert-success { background: #27AE6018; color: #2ECC71; border: 1px solid #27AE6055; }
+    .alert-error   { background: #E74C3C18; color: #E74C3C;  border: 1px solid #E74C3C55; }
+
+    /* ── SEARCH ── */
+    .search-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
+    .search-bar input { flex: 1; }
+    .empty-state { text-align: center; padding: 3rem; color: var(--muted); font-size: 14px; }
+
+    .detail-row {
+      display: flex; justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key { color: var(--muted); }
+
+    .hint { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: center; opacity: 0.7; }
+
+    .error-text { font-size: 12px; color: var(--danger); margin-top: 6px; display: none; }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="logo-lockup">
+        <div class="logo-icon"><i class="ti ti-barbell"></i></div>
+        <div>
+          <div class="logo-name">Beetle Web Fitness</div>
+          <div class="logo-sub">Management System</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Username</label>
+        <input type="text" id="loginUser" placeholder="Enter username" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password" />
+        <div class="error-text" id="loginError">Invalid username or password.</div>
+      </div>
+      <button class="btn-primary btn-full" onclick="doLogin()">Sign in</button>
+      <div class="hint">admin / gym123</div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainApp" style="display:none">
+    <div class="header">
+      <div class="logo-lockup">
+        <div class="logo-icon" style="width:34px;height:34px;font-size:16px"><i class="ti ti-barbell"></i></div>
+        <div>
+          <div class="logo-name" style="font-size:17px">Beetle Web Fitness</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:12px;color:var(--muted)">Admin</span>
+        <button class="btn-secondary" onclick="doLogout()" style="font-size:12px;padding:6px 12px">Sign out</button>
+      </div>
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn active" id="nav-dashboard" onclick="showTab('dashboard')">Dashboard</button>
+      <button class="nav-btn" id="nav-add"       onclick="showTab('add')">Add Member</button>
+      <button class="nav-btn" id="nav-members"   onclick="showTab('members')">All Members</button>
+      <button class="nav-btn" id="nav-search"    onclick="showTab('search')">Search</button>
+    </div>
+    <div class="main-area" id="tabContent"></div>
+  </div>
+
+</div>
+<script>
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_PASSWORD = "gym123";
+  const GYM_NAME       = "Beetle Web Fitness";
+
+  const PACKAGES = [
+    { name: "Gold",   fee: 2500 },
+    { name: "Silver", fee: 2000 },
+  ];
+
+  const TIMINGS = [
+    "6AM - 7AM",
+    "7AM - 8AM",
+    "5PM - 6PM",
+  ];
+
+  function loadMembers()  { try { return JSON.parse(localStorage.getItem('gym_members')  || '[]'); } catch { return []; } }
+  function saveMembers(a) { localStorage.setItem('gym_members',  JSON.stringify(a)); }
+  function loadDeleted()  { try { return JSON.parse(localStorage.getItem('gym_deleted')  || '[]'); } catch { return []; } }
+  function saveDeleted(a) { localStorage.setItem('gym_deleted',  JSON.stringify(a)); }
+
+  function doLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display     = 'block';
+      showTab('dashboard');
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+  function doLogout() {
+    document.getElementById('mainApp').style.display     = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+  }
+
+  function showTab(tab) {
+    ['dashboard','add','members','search'].forEach(t =>
+      document.getElementById('nav-'+t).classList.toggle('active', t === tab)
+    );
+    const el = document.getElementById('tabContent');
+    if      (tab === 'dashboard') el.innerHTML = renderDashboard();
+    else if (tab === 'add')       el.innerHTML = renderAddForm();
+    else if (tab === 'members')   el.innerHTML = renderMembers();
+    else if (tab === 'search')    el.innerHTML = renderSearch();
+  }
+
+  function renderDashboard() {
+    const members = loadMembers();
+    const deleted = loadDeleted();
+    const revenue = members.reduce((s, m) => s + (m.amountPaid || 0), 0);
+    const pkgCounts = {};
+    PACKAGES.forEach(p => pkgCounts[p.name] = 0);
+    members.forEach(m => { if (pkgCounts[m.pkg] !== undefined) pkgCounts[m.pkg]++; });
+
+    const timingRows = TIMINGS.map(t => {
+      const c = members.filter(m => m.timing === t).length;
+      return `<div class="detail-row"><span class="detail-key">${t}</span><span>${c} member${c!==1?'s':''}</span></div>`;
+    }).join('');
+
+    const pkgSummary = PACKAGES.map(p => `${pkgCounts[p.name]} ${p.name}`).join(' / ');
+
+    return `
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total members</div>
+          <div class="stat-value">${members.length}</div>
+          <div class="stat-sub">${deleted.length} in trash</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Packages</div>
+          <div class="stat-value" style="font-size:15px;margin-top:6px">${pkgSummary}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total revenue</div>
+          <div class="stat-value">KES ${revenue.toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Members by timing slot</div>
+        ${timingRows || '<div class="empty-state" style="padding:8px 0">No members yet</div>'}
+      </div>
+      ${deleted.length > 0 ? `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#2E86DE12;border:1px solid #2E86DE44;border-radius:10px;font-size:13px">
+          <span style="color:var(--accent)">${deleted.length} deleted member${deleted.length!==1?'s':''} can be restored</span>
+          <button class="btn-undo" onclick="undoDelete()">Undo delete</button>
+        </div>` : ''}
+    `;
+  }
+
+  let fState = { pkg: PACKAGES[0].name, timing: TIMINGS[0] };
+
+  function renderAddForm(alertHtml) {
+    const fee = (PACKAGES.find(p => p.name === fState.pkg) || PACKAGES[0]).fee;
+    return `
+      ${alertHtml || ''}
+      <div class="card">
+        <div class="card-title">Add new member</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Member ID</label>
+            <input type="number" id="fid" placeholder="e.g. 101" />
+          </div>
+          <div class="form-field">
+            <label>Full name</label>
+            <input type="text" id="fname" placeholder="e.g. John Mwangi" />
+          </div>
+          <div class="form-field full">
+            <label>Contact number</label>
+            <input type="number" id="fcontact" placeholder="e.g. 0712345678" />
+          </div>
+          <div class="form-field full">
+            <label>Membership package</label>
+            <div class="radio-group">
+              ${PACKAGES.map(p => `
+                <label class="radio-opt ${fState.pkg===p.name?'selected':''}" onclick="setPkg('${p.name}')">
+                  <input type="radio" name="pkg" value="${p.name}" />
+                  ${p.name} — KES ${p.fee.toLocaleString()}
+                </label>`).join('')}
+            </div>
+          </div>
+          <div class="form-field full">
+            <label>Gym timing slot</label>
+            <div class="radio-group">
+              ${TIMINGS.map(t => `
+                <label class="radio-opt ${fState.timing===t?'selected':''}" onclick="setTiming('${t}')">
+                  <input type="radio" name="timing" value="${t}" /> ${t}
+                </label>`).join('')}
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Membership fee (KES)</label>
+            <input type="number" id="ffee" value="${fee}" readonly />
+          </div>
+          <div class="form-field">
+            <label>Payment amount (KES)</label>
+            <input type="number" id="fpayment" placeholder="Enter amount paid" />
+          </div>
+        </div>
+        <div class="actions-row">
+          <button class="btn-secondary" onclick="showTab('dashboard')">Cancel</button>
+          <button class="btn-primary" onclick="submitMember()">Register member</button>
+        </div>
+      </div>`;
+  }
+
+  function setPkg(name) { fState.pkg = name; showTab('add'); }
+  function setTiming(t) { fState.timing = t; showTab('add'); }
+
+  function submitMember() {
+    const id      = parseInt(document.getElementById('fid').value);
+    const name    = document.getElementById('fname').value.trim();
+    const contact = document.getElementById('fcontact').value.trim();
+    const payment = parseFloat(document.getElementById('fpayment').value);
+    const pkg     = PACKAGES.find(p => p.name === fState.pkg) || PACKAGES[0];
+
+    if (!id || !name || !contact || isNaN(payment)) {
+      document.getElementById('tabContent').innerHTML = renderAddForm('<div class="alert alert-error">Please fill in all fields.</div>');
+      return;
+    }
+    const members = loadMembers();
+    if (members.find(m => m.id === id)) {
+      document.getElementById('tabContent').innerHTML = renderAddForm(`<div class="alert alert-error">Member ID ${id} already exists.</div>`);
+      return;
+    }
+    if (payment < pkg.fee) {
+      document.getElementById('tabContent').innerHTML = renderAddForm(`<div class="alert alert-error">Insufficient payment. Minimum required: KES ${pkg.fee.toLocaleString()}.</div>`);
+      return;
+    }
+    members.push({ id, name, contact, pkg: pkg.name, fee: pkg.fee, timing: fState.timing, amountPaid: payment, paid: true });
+    saveMembers(members);
+    fState = { pkg: PACKAGES[0].name, timing: TIMINGS[0] };
+    showTab('members');
+  }
+
+  function renderMembers() {
+    const members = loadMembers();
+    const deleted = loadDeleted();
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+        <span style="font-size:14px;font-weight:600">${members.length} member${members.length!==1?'s':''}</span>
+        <div style="display:flex;gap:8px">
+          ${deleted.length > 0 ? `<button class="btn-undo" onclick="undoDelete()">Undo delete (${deleted.length})</button>` : ''}
+          <button class="btn-primary" onclick="showTab('add')">+ Add member</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        ${members.length === 0
+          ? '<div class="empty-state">No members yet. Add your first member!</div>'
+          : `<table class="member-table">
+              <thead><tr>
+                <th>ID</th><th>Name</th><th>Contact</th><th>Package</th>
+                <th>Timing</th><th>Fee</th><th>Paid</th><th>Status</th><th></th>
+              </tr></thead>
+              <tbody>
+                ${members.map(m => `<tr>
+                  <td><strong style="color:var(--accent)">#${m.id}</strong></td>
+                  <td>${m.name}</td>
+                  <td style="color:var(--muted)">${m.contact}</td>
+                  <td><span class="badge ${m.pkg==='Gold'?'badge-gold':'badge-silver'}">${m.pkg}</span></td>
+                  <td style="color:var(--muted);font-size:12px">${m.timing}</td>
+                  <td>KES ${m.fee.toLocaleString()}</td>
+                  <td>KES ${m.amountPaid.toLocaleString()}</td>
+                  <td><span class="badge ${m.paid?'badge-paid':'badge-unpaid'}">${m.paid?'Paid':'Unpaid'}</span></td>
+                  <td><button class="btn-danger" onclick="deleteMember(${m.id})">Delete</button></td>
+                </tr>`).join('')}
+              </tbody>
+            </table>`}
+      </div>`;
+  }
+
+  function deleteMember(id) {
+    let members = loadMembers();
+    const idx = members.findIndex(m => m.id === id);
+    if (idx === -1) return;
+    const deleted = loadDeleted();
+    deleted.push(members[idx]);
+    members.splice(idx, 1);
+    saveMembers(members);
+    saveDeleted(deleted);
+    showTab('members');
+  }
+
+  function undoDelete() {
+    const deleted = loadDeleted();
+    if (!deleted.length) return;
+    const member = deleted.pop();
+    const members = loadMembers();
+    members.push(member);
+    saveMembers(members);
+    saveDeleted(deleted);
+    showTab('members');
+  }
+
+  function renderSearch() {
+    return `
+      <div class="card">
+        <div class="card-title">Search member</div>
+        <div class="search-bar">
+          <input type="text" id="searchInput" placeholder="Search by ID or name..." />
+          <button class="btn-primary" onclick="doSearch()">Search</button>
+        </div>
+        <div id="searchResults"></div>
+      </div>`;
+  }
+
+  function doSearch() {
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (!q) return;
+    const results = loadMembers().filter(m =>
+      m.name.toLowerCase().includes(q) || String(m.id).includes(q)
+    );
+    const el = document.getElementById('searchResults');
+    if (!results.length) { el.innerHTML = '<div class="empty-state">No members found.</div>'; return; }
+    el.innerHTML = results.map(m => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:10px;background:var(--navy)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:38px;height:38px;border-radius:50%;background:#2E86DE22;border:1px solid #2E86DE44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--accent)">
+              ${m.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:14px">${m.name}</div>
+              <div style="font-size:12px;color:var(--muted)">ID #${m.id}</div>
+            </div>
+          </div>
+          <span class="badge ${m.pkg==='Gold'?'badge-gold':'badge-silver'}">${m.pkg}</span>
+        </div>
+        <div class="detail-row"><span class="detail-key">Contact</span><span>${m.contact}</span></div>
+        <div class="detail-row"><span class="detail-key">Timing</span><span>${m.timing}</span></div>
+        <div class="detail-row"><span class="detail-key">Fee</span><span>KES ${m.fee.toLocaleString()}</span></div>
+        <div class="detail-row"><span class="detail-key">Amount paid</span><span>KES ${m.amountPaid.toLocaleString()}</span></div>
+        <div class="detail-row"><span class="detail-key">Status</span><span class="badge ${m.paid?'badge-paid':'badge-unpaid'}">${m.paid?'Paid':'Unpaid'}</span></div>
+      </div>`).join('');
+  }
+</script>
+</body>
+</html>
